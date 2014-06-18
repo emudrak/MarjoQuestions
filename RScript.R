@@ -4,7 +4,7 @@ library(lme4)     # For random effects
 library(lsmeans)  # To summarized expected values by group
 library(pbkrtest) # Way to get p-values
                   # http://www.inside-r.org/packages/cran/lme4/docs/pvalues
-                  # What is restriction matrix? http://people.su.se/~palme/Rmatr.pdf
+                  # What is restriction matrix? http://people.su.se/~palme/Rmatr.pdf 
 
 
 annuals <- read.spss("SPSS BothSitesAllYears Data File.sav",to.data.frame=TRUE)
