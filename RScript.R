@@ -15,7 +15,7 @@ annuals$Year=as.factor(annuals$Year)
 
 #Reponse variables:  Biomass, Counts of target species, Cover of target species.
 
-
+   
 ####  Biomass -----
 hist(annuals$EstBiomass)
 table(annuals$EstBiomass)
