@@ -17,11 +17,18 @@ annuals$Year=as.factor(annuals$Year)
 
    
 ####  Biomass -----
-hist(annuals$EstBiomass)
-table(annuals$EstBiomass)
-hist(log(annuals$EstBiomass))
+
+#Use this line to change subsets (i.e. switch to Sonoran)
+subdata=subset(annuals, (Desert=='Mojave ' & TranDir=='N' & Year!=2011)) 
+
+hist(subdata$EstBiomass)
+table(subdata$EstBiomass) #755 zeros
+hist(log(subdata$EstBiomass+1))  #Logging this is silly
+table(log(subdata$EstBiomass+1)) 
+hist(logw0(subdata$EstBiomass))
+table(logw0(subdata$EstBiomass))
 #Full factorial model
-biomass.lmer=lmer(EstBiomass~FireTrt*RainTrt*SeedTrt*TurbTrt*Year*MH+(1|ShrubID)+(1|ShrubID:Plot),  data=subset(annuals, (Desert=='Mojave ' & TranDir=='N' & Year!=2011)) )
+biomass.lmer=lmer(EstBiomass~FireTrt*RainTrt*SeedTrt*TurbTrt*Year*MH+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata )
 #Gives warning message. Maybe false positive?  see Ben Bolkers comment here: 
 # http://comments.gmane.org/gmane.comp.lang.r.lme4.devel/11674
 summary(biomass.lmer)
