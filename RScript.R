@@ -23,10 +23,44 @@ subdata=subset(annuals, (Desert=='Mojave ' & TranDir=='N' & Year!=2011))
 
 hist(subdata$EstBiomass)
 table(subdata$EstBiomass) #755 zeros
+min(subdata$EstBiomass[subdata$EstBiomass>0], na.rm=T)
+
+
 hist(log(subdata$EstBiomass+1))  #Logging this is silly
+plot(subdata$EstBiomass, log(subdata$EstBiomass+1))
 table(log(subdata$EstBiomass+1)) 
+
 hist(logw0(subdata$EstBiomass))
+plot(subdata$EstBiomass, logw0(subdata$EstBiomass))
 table(logw0(subdata$EstBiomass))
+
+hist(log(subdata$EstBiomass))
+hist(logw0(subdata$Erci))
+table(logw0(subdata$Erci))
+
+#Reason for special log transform
+log(0.001)
+log(0.01)
+log(1.001)
+log(1.01)
+tx=seq(0,10,by=0.001)
+plot(tx)
+plot(tx, log(tx))
+plot(tx, log(tx+1))
+plot(tx, logw0(tx))
+pairs(cbind(log=log(tx), logp1=log(tx+1), logw0=logw0(tx), orig=tx))
+
+
+plot(subdata$EstBiomass, log(subdata$EstBiomass))
+plot(subdata$EstBiomass, log(subdata$EstBiomass+1))
+
+
+
+
+
+
+
+
 #Full factorial model
 biomass.lmer=lmer(EstBiomass~FireTrt*RainTrt*SeedTrt*TurbTrt*Year*MH+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata )
 #Gives warning message. Maybe false positive?  see Ben Bolkers comment here: 

@@ -20,9 +20,8 @@ library(pbkrtest)
 #Use this line to change subsets (i.e. switch to Sonoran)
 subdata=subset(annuals, (Desert=='Mojave ' & TranDir=='N' & Year!=2011)) 
 table(subdata$Erci)  #891 zeros
-hist(log(subdata$Erci))
-hist(logw0(subdata$Erci))
-table(logw0(subdata$Erci))
+
+
 biomass.glmer=glmer(Erci~(FireTrt+RainTrt+SeedTrt+TurbTrt+Year+MH)^2+(1|ShrubID)+(1|ShrubID:Plot), family="poisson", data=subdata )
 
 summary(biomass.glmer)

@@ -22,7 +22,7 @@ logit.transform.eps = function(x, eps){
 logw0=function(x){ 
     #  x is a vector of values >=0
   # The following transformation preserves orders of magnitudes and results in 0 when original data is zero. 
-  c=floor(log(min(x[x>0], na.rm=T)))
+  c=trunc(log(min(x[x>0], na.rm=T)))
   d=exp(c)
   return(log(x+d)-c)
 }
