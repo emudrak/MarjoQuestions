@@ -6,7 +6,10 @@ library(pbkrtest) # Way to get p-values
                   # http://www.inside-r.org/packages/cran/lme4/docs/pvalues
                   # What is restriction matrix? http://people.su.se/~palme/Rmatr.pdf 
 
+<<<<<<< HEAD
 source("Transform.R")
+=======
+>>>>>>> c84c8d2c7722682d7688aa2e66fc93216ae506cb
 
 annuals <- read.spss("SPSS BothSitesAllYears Data File.sav",to.data.frame=TRUE)
 str(annuals)
