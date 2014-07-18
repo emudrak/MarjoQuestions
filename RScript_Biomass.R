@@ -125,26 +125,29 @@ lsmip(hurdle7.lme, RainTrt~MH|Year)
 
 ###########
 # Now model biomass of non-zero quads
+hist(subdata[subdata$EstBiomass>0,]$EstBiomass)
+hist(log(subdata[subdata$EstBiomass>0,]$EstBiomass))
 par(mfrow=c(2,3))
-boxplot(EstBiomass~FireTrt, data=subdata[subdata$EstBiomass>0,], main="FireTrt")
-boxplot(EstBiomass~RainTrt, data=subdata[subdata$EstBiomass>0,], main="RainTrt")
-boxplot(EstBiomass~SeedTrt, data=subdata[subdata$EstBiomass>0,], main="SeedTrt")
-boxplot(EstBiomass~TurbTrt, data=subdata[subdata$EstBiomass>0,], main="TurbTrt")
-boxplot(EstBiomass~Year, data=subdata[subdata$EstBiomass>0,], main="Year")
-boxplot(EstBiomass~MH, data=subdata[subdata$EstBiomass>0,], main="MH")
+boxplot(log(EstBiomass)~FireTrt, data=subdata[subdata$EstBiomass>0,], main="FireTrt")
+boxplot(log(EstBiomass)~RainTrt, data=subdata[subdata$EstBiomass>0,], main="RainTrt")
+boxplot(log(EstBiomass)~SeedTrt, data=subdata[subdata$EstBiomass>0,], main="SeedTrt")
+boxplot(log(EstBiomass)~TurbTrt, data=subdata[subdata$EstBiomass>0,], main="TurbTrt")
+boxplot(log(EstBiomass)~Year, data=subdata[subdata$EstBiomass>0,], main="Year")
+boxplot(log(EstBiomass)~MH, data=subdata[subdata$EstBiomass>0,], main="MH")
 par(mfrow=c(1,1))
 
 #Looking for interactions- I checked all pairwise interactins, but only these seemed like a possibility of interaction
 par(mfrow=c(2,2))
-boxplot(EstBiomass~RainTrt*Year, data=subdata[subdata$EstBiomass>0,], main="RainTrt x Yr") #Looks signif
-boxplot(EstBiomass~RainTrt*MH, data=subdata[subdata$EstBiomass>0,], main="RainTrt x MH")  #Could be signif
-boxplot(EstBiomass~Year*MH, data=subdata[subdata$EstBiomass>0,], main="Year x MH") #Could be signif
+boxplot(log(EstBiomass)~RainTrt*Year, data=subdata[subdata$EstBiomass>0,], main="RainTrt x Yr") #Looks signif
+boxplot(log(EstBiomass)~RainTrt*MH, data=subdata[subdata$EstBiomass>0,], main="RainTrt x MH")  #Could be signif
+boxplot(log(EstBiomass)~Year*MH, data=subdata[subdata$EstBiomass>0,], main="Year x MH") #Could be signif
+
 par(mfrow=c(1,1))
 
 
 
 #Fit all main effects, and all two-way interactions
-biomass.lmer=lmer(EstBiomass~(FireTrt+RainTrt+SeedTrt+TurbTrt+Year+MH)^2+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata[subdata$EstBiomass>0,] )
+biomass.lmer=lmer(log(EstBiomass)~(FireTrt+RainTrt+SeedTrt+TurbTrt+Year+MH)^2+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata[subdata$EstBiomass>0,] )
 
 summary(biomass.lmer)
 anova(biomass.lmer)
@@ -155,7 +158,8 @@ pvals<-round(apply(RM, 1, function(x)KRmodcomp(biomass.lmer, t(x))$stats$p.value
 cbind(summary(biomass.lmer)$coefficients,pvals)
 # The interaction terms look like they match our exploratory figures, so just add those interaction terms...
 
-biomass2.lmer=lmer(EstBiomass~FireTrt+RainTrt+SeedTrt+TurbTrt+Year+MH + RainTrt:Year + RainTrt:MH + Year:MH+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata[subdata$EstBiomass>0,] )
+
+biomass2.lmer=lmer(log(EstBiomass)~FireTrt+RainTrt+SeedTrt+TurbTrt+Year+MH + RainTrt:Year + RainTrt:MH + Year:MH+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata[subdata$EstBiomass>0,] )
 
 summary(biomass2.lmer)
 anova(biomass2.lmer)
@@ -164,10 +168,10 @@ RM=Diagonal(dim(summary(biomass2.lmer)$coefficients)[1])
 #a slow function
 pvals<-round(apply(RM, 1, function(x)KRmodcomp(biomass2.lmer, t(x))$stats$p.value),4)
 cbind(summary(biomass2.lmer)$coefficients,pvals)
-#Main Effects of Fire, Seed and Turb NS.  Remove
 
-biomass3.lmer=lmer(EstBiomass~RainTrt+Year+MH+ RainTrt:Year + RainTrt:MH + Year:MH+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata[subdata$EstBiomass>0,] )
 
+#Take out Rain:MH
+biomass3.lmer=lmer(log(EstBiomass)~FireTrt+RainTrt+SeedTrt+TurbTrt+Year+MH + RainTrt:Year + Year:MH+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata[subdata$EstBiomass>0,] )
 summary(biomass3.lmer)
 anova(biomass3.lmer)
 dim(summary(biomass3.lmer)$coefficients)
@@ -175,14 +179,26 @@ RM=Diagonal(dim(summary(biomass3.lmer)$coefficients)[1])
 #a slow function
 pvals<-round(apply(RM, 1, function(x)KRmodcomp(biomass3.lmer, t(x))$stats$p.value),4)
 cbind(summary(biomass3.lmer)$coefficients,pvals)
-# So stick with this model- Rain, Year, MH, and all interactions here 
+#No main effect of TurbTrt, SeedTrt, Fire Trt- take out
+
+biomass4.lmer=lmer(log(EstBiomass)~RainTrt+Year+MH + RainTrt:Year + Year:MH+(1|ShrubID)+(1|ShrubID:Plot),  data=subdata[subdata$EstBiomass>0,] )
+summary(biomass4.lmer)
+anova(biomass4.lmer)
+dim(summary(biomass4.lmer)$coefficients)
+RM=Diagonal(dim(summary(biomass4.lmer)$coefficients)[1])
+#a slow function
+pvals<-round(apply(RM, 1, function(x)KRmodcomp(biomass4.lmer, t(x))$stats$p.value),4)
+cbind(summary(biomass4.lmer)$coefficients,pvals)
+#So stick with RainTrt, Year, MH, RainTrt:Year, Year:MH
+plot(biomass4.lmer)
+
 
 
 #Get least squares means for each group of Rain*Year*MH
-lsmeans(biomass3.lmer,  ~ RainTrt:Year:MH)  #Just put in highest order interactions
+lsmeans(biomass4.lmer,  ~ RainTrt:Year:MH)  
 #Add pairwise comparisons
-lsmeans(biomass3.lmer, pairwise ~ RainTrt:Year:MH)  
+lsmeans(biomass4.lmer, pairwise ~ RainTrt:Year:MH)  
 #Interactin Plot
-lsmip(biomass3.lmer, RainTrt~MH|Year)
+lsmip(biomass4.lmer, RainTrt~MH|Year)
 
 
